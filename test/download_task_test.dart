@@ -1,4 +1,4 @@
-import 'package:resumable_download/resumable_download.dart';
+import 'package:download_task/download_task.dart';
 import 'package:test/test.dart';
 
 void main() {

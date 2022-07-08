@@ -1,5 +1,5 @@
-name: resumable_download
-description: Resumable http get request
+name: download_task
+description: Resumable http download request
 version: 1.0.0
 publish_to: 'none'
 

@@ -1,7 +1,7 @@
-part of 'package:resumable_download/src/resumable_download_base.dart';
+/*part of 'package:download_task/src/download.dart';
 
 class DownloadConfig {
-  DownloadConfig._({
+  const DownloadConfig._({
     required this.url,
     required this.file,
     required this.headers,
@@ -21,8 +21,8 @@ class DownloadConfig {
   final Map<String, String> headers;
   final http.Client client;
 
-  void Function(int bytesReceived, int totalBytes)? onProgress;
-  void Function()? onDone;
+  final void Function(int bytesReceived, int totalBytes)? onProgress;
+  final void Function()? onDone;
   final void Function(Object)? onError;
   final void Function()? onCancel;
   final void Function(int bytesReceived, int totalBytes)? onPause;
@@ -30,4 +30,4 @@ class DownloadConfig {
 
   final bool deleteOnCancel;
   final bool deleteOnError;
-}
+}*/
