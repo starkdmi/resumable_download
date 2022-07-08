@@ -1,4 +1,4 @@
-/// Resumable http get request
+/// Resumable http download request
 ///
 /// More dartdocs go here.
 library download_task;
