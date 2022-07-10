@@ -1,4 +1,6 @@
 // @Timeout(Duration(seconds: 300))
+import 'dart:async';
+
 import 'package:download_task/download_task.dart';
 import 'package:http/testing.dart';
 import 'package:test/test.dart';
@@ -19,7 +21,8 @@ void main() {
       return streamFile("image.png");
     } else if (request.url == links[1]) {
       // return streamRandomBytes(50 * 1024 * 1024);
-      return streamFile("video.mp4");
+      return longStream(seconds: 10);
+      // return streamFile("video.mp4");
     } else if (request.url == links[1]) {
       // final response = http.StreamedResponse(Stream.fromIterable([]), 404);
       // return Future.value(response);
@@ -138,6 +141,17 @@ Future<http.StreamedResponse> streamFile(String filename){
   final response = http.StreamedResponse(stream, 200);
   return Future.value(response);
 }*/
+
+Future<http.StreamedResponse> longStream({ required int seconds }) {
+  final controller = StreamController<List<int>>();
+  for (int i = 0; i <= seconds; i++) {
+    Future.delayed(Duration(seconds: i))
+      .then((_) => controller.add([100, 100, 100]));
+  }
+  final response = http.StreamedResponse(controller.stream, 200);
+  return Future.value(response);
+}
+
 
 Future<void> deleteFile(File file) async {
   if (await file.exists()) {
