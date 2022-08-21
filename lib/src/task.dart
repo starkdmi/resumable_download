@@ -1,4 +1,4 @@
-import 'dart:async' show StreamSubscription, StreamController;
+import 'dart:async' show StreamController, StreamSubscription;
 import 'dart:io' show File, FileMode;
 import 'package:http/http.dart' as http;
 
@@ -26,6 +26,8 @@ class DownloadTask {
     required this.client,
     required this.deleteOnCancel,
     required this.deleteOnError,
+    this.size,
+    this.safeRange = false,
   });
 
   final Uri url;
@@ -34,6 +36,9 @@ class DownloadTask {
   final http.Client client;
   final bool deleteOnCancel;
   final bool deleteOnError;
+
+  final int? size;
+  final bool safeRange;
 
   Stream<TaskEvent> get events => _events.stream;
   TaskEvent? get event => _event;
@@ -44,6 +49,8 @@ class DownloadTask {
     required File file,
     bool deleteOnCancel = true,
     bool deleteOnError = false,
+    int? size, // used to specify bytes end for range header
+    bool safeRange = false, // used to skip range header if bytes end not found
   }) async {
     final task = DownloadTask._(
       url: url,
@@ -52,6 +59,8 @@ class DownloadTask {
       file: file,
       deleteOnCancel: deleteOnCancel,
       deleteOnError: deleteOnError,
+      size: size,
+      safeRange: safeRange
     );
     await task.resume();
     return task;
@@ -136,12 +145,35 @@ class DownloadTask {
       }
       final sink = await file.open(mode: FileMode.writeOnlyAppend);
 
-      final request = http.Request("GET", url)
-        ..headers["Range"] = "bytes=$from-";
+      final request = http.Request("GET", url);
+
+      // range header
+      if (size != null) {
+        request.headers["Range"] = "bytes=$from-$size";
+      } else {
+        if (!safeRange) {
+          request.headers["Range"] = "bytes=$from-";
+        }
+      }
+
       final response = await client.send(request);
 
+      // length total
+      int totalBytes = -1;
       final length = response.contentLength;
-      final totalBytes = length != null ? from + length : -1;
+      if (length != null) {
+        totalBytes = from + length;
+      } else {
+        // Content-Lenght header is missing, but sometimes we can get size from Content-Range header
+        final range = response.headers["content-range"];
+        if (range != null) {
+          final index = range.indexOf("/");
+          if (index != -1) {
+            final total = int.tryParse(range.substring(index + 1));
+            if (total != null) totalBytes = total;
+          }
+        }
+      }
 
       // process
       subscription = response.stream.listen(
