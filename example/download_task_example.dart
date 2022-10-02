@@ -9,8 +9,9 @@ void main() async {
 
   double previousProgress = 0.0;
   final task = await DownloadTask.download(url,
-    file: File("/Users/starkdmi/Downloads/test/Go.gz"),
+    file: File("/Users/starkdmi/Downloads/test/Go.tar.gz"),
   );
+
   task.events.listen((event) { 
     switch (event.state) {
       case TaskState.downloading:
