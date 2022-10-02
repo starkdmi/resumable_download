@@ -80,30 +80,6 @@ void main() {
         TaskState.canceled,
       ]));
     });
-
-    /*test("Pause, Resume, Cancel #2", () async {
-      Future.delayed(const Duration(milliseconds: 150)).then((_) => task.pause());
-      Future.delayed(const Duration(milliseconds: 300)).then((_) => task.resume());
-      Future.delayed(const Duration(milliseconds: 450)).then((_) => task.pause());
-      Future.delayed(const Duration(milliseconds: 600)).then((_) => task.resume());
-      Future.delayed(const Duration(milliseconds: 750)).then((_) => task.cancel());
-
-      late TaskEvent event;
-      var stream = task.events.skipWhile((e) => e.state == TaskState.downloading);
-      // event = await stream.first;
-      expect((await stream.first).state, equals(TaskState.paused));
-      // event = await stream.first;
-      // expect((await stream.first).state, equals(TaskState.downloading));
-      // stream = stream.skipDownloading();
-      // // event = await stream.first;
-      // expect((await stream.first).state, equals(TaskState.paused));
-      // expect((await stream.first).state, equals(TaskState.downloading));
-      // stream = stream.skipDownloading();
-      // expect((await stream.first).state, equals(TaskState.canceled));
-
-      // Another way to test is to use StreamQueue from "async" package
-      // https://pub.dev/packages/test#stream-matcher
-    });*/
   });
 
   group("Bad link", () {
@@ -119,10 +95,10 @@ void main() {
     });
 
     test("Should fail", () async {
+      await Future.delayed(const Duration(milliseconds: 300));
       final events = await task.events.toList();
-      print(events);
-      expect(events.last.state, equals(TaskState.error));
-      
+      // print(events);
+      expect(events.last.state, equals(TaskState.error));      
       expect(file.existsSync(), equals(false));
     });
   });
@@ -135,6 +111,7 @@ Future<http.StreamedResponse> streamFile(String filename){
   return Future.value(response);
 }
 
+// Uint8List(1024)
 /*Future<http.StreamedResponse> streamRandomBytes(int length) {
   final list = List.generate(length, (index) => 100);
   final stream = Stream.fromIterable([list]);

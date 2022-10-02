@@ -75,7 +75,8 @@ class DownloadTask {
 
   Future<bool> resume() async {
     if (_doneOrCancelled || _downloading) return false;
-    _subscription = await _download();
+    // _subscription = await _download();
+    _download().then((value) => _subscription = value);
     _addEvent(TaskEvent(state: TaskState.downloading, bytesReceived: _bytesReceived, totalBytes: _totalBytes));
     return true;
   }
