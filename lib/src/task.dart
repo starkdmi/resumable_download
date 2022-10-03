@@ -3,13 +3,12 @@ import 'dart:io' show File, FileMode;
 import 'package:http/http.dart' as http;
 
 /// Downloading state
-enum TaskState {
-  downloading, paused, success, canceled, error
-}
+enum TaskState { downloading, paused, success, canceled, error }
 
 /// Event representing current progress or error and the current state
 class TaskEvent {
-  const TaskEvent({ required this.state, this.bytesReceived, this.totalBytes, this.error });
+  const TaskEvent(
+      {required this.state, this.bytesReceived, this.totalBytes, this.error});
 
   final TaskState state;
   final int? bytesReceived;
@@ -22,7 +21,7 @@ class TaskEvent {
 
 /// Main class, used as a singletone for initialising the downloads
 class DownloadTask {
-  DownloadTask._({ 
+  DownloadTask._({
     required this.url,
     required this.file,
     required this.headers,
@@ -44,6 +43,7 @@ class DownloadTask {
 
   /// Events stream, used to listen for downloading state changes
   Stream<TaskEvent> get events => _events.stream;
+
   /// Latest event
   TaskEvent? get event => _event;
 
@@ -56,7 +56,8 @@ class DownloadTask {
   /// [deleteOnError] specify if file should be deleted when error is raised
   /// [size] used to specify bytes end for range header
   /// [safeRange] used to skip range header if bytes end not found
-  static Future<DownloadTask> download(Uri url, {
+  static Future<DownloadTask> download(
+    Uri url, {
     Map<String, String> headers = const {},
     http.Client? client,
     required File file,
@@ -66,25 +67,27 @@ class DownloadTask {
     bool safeRange = false,
   }) async {
     final task = DownloadTask._(
-      url: url,
-      headers: headers,
-      client: client ?? http.Client(),
-      file: file,
-      deleteOnCancel: deleteOnCancel,
-      deleteOnError: deleteOnError,
-      size: size,
-      safeRange: safeRange
-    );
+        url: url,
+        headers: headers,
+        client: client ?? http.Client(),
+        file: file,
+        deleteOnCancel: deleteOnCancel,
+        deleteOnError: deleteOnError,
+        size: size,
+        safeRange: safeRange);
     await task.resume();
     return task;
   }
 
-  /// Pause file downloading, file will be stored on defined location 
+  /// Pause file downloading, file will be stored on defined location
   /// downloading may be continued from the paused point if file exists
   Future<bool> pause() async {
     if (_doneOrCancelled || !_downloading) return false;
     await _subscription?.cancel();
-    _addEvent(TaskEvent(state: TaskState.paused, bytesReceived: _bytesReceived, totalBytes: _totalBytes));
+    _addEvent(TaskEvent(
+        state: TaskState.paused,
+        bytesReceived: _bytesReceived,
+        totalBytes: _totalBytes));
     return true;
   }
 
@@ -94,7 +97,10 @@ class DownloadTask {
     if (_doneOrCancelled || _downloading) return false;
     // _subscription = await _download();
     _download().then((value) => _subscription = value);
-    _addEvent(TaskEvent(state: TaskState.downloading, bytesReceived: _bytesReceived, totalBytes: _totalBytes));
+    _addEvent(TaskEvent(
+        state: TaskState.downloading,
+        bytesReceived: _bytesReceived,
+        totalBytes: _totalBytes));
     return true;
   }
 
@@ -103,7 +109,10 @@ class DownloadTask {
   Future<bool> cancel() async {
     if (_doneOrCancelled) return false;
     await _subscription?.cancel();
-    _addEvent(TaskEvent(state: TaskState.canceled, bytesReceived: _bytesReceived, totalBytes: _totalBytes));
+    _addEvent(TaskEvent(
+        state: TaskState.canceled,
+        bytesReceived: _bytesReceived,
+        totalBytes: _totalBytes));
     _dispose(TaskState.canceled);
     return true;
   }
@@ -112,7 +121,7 @@ class DownloadTask {
   StreamSubscription? _subscription;
   final StreamController<TaskEvent> _events = StreamController<TaskEvent>();
   TaskEvent? _event;
-  
+
   int _bytesReceived = -1;
   int _totalBytes = -1;
 
@@ -147,7 +156,7 @@ class DownloadTask {
     }
   }
 
-  /// Download function 
+  /// Download function
   /// returns future of [StreamSubscription] which used to receive updates internally
   /// returns `null` on error
   Future<StreamSubscription?> _download() async {
@@ -203,25 +212,24 @@ class DownloadTask {
       }
 
       // process
-      subscription = response.stream.listen(
-        (data) async {
-          subscription.pause();
-          await sink.writeFrom(data); 
-          final bytesReceived = from + data.length;
-          from = bytesReceived;
-          _bytesReceived = bytesReceived;
-          _totalBytes = totalBytes;
-          _addEvent(TaskEvent(state: TaskState.downloading, bytesReceived: bytesReceived, totalBytes: totalBytes));
-          subscription.resume();
-        },
-        onDone: () async {
-          _addEvent(const TaskEvent(state: TaskState.success));
-          await sink.close();
-          // client.close();
-          _dispose(TaskState.success);
-        },
-        onError: onError
-      );
+      subscription = response.stream.listen((data) async {
+        subscription.pause();
+        await sink.writeFrom(data);
+        final bytesReceived = from + data.length;
+        from = bytesReceived;
+        _bytesReceived = bytesReceived;
+        _totalBytes = totalBytes;
+        _addEvent(TaskEvent(
+            state: TaskState.downloading,
+            bytesReceived: bytesReceived,
+            totalBytes: totalBytes));
+        subscription.resume();
+      }, onDone: () async {
+        _addEvent(const TaskEvent(state: TaskState.success));
+        await sink.close();
+        // client.close();
+        _dispose(TaskState.success);
+      }, onError: onError);
 
       return subscription;
     } catch (error) {
