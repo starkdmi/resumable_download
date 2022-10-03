@@ -40,17 +40,28 @@ class DownloadTask {
   final int? size;
   final bool safeRange;
 
+  /// Events stream, used to listen for downloading state changes
   Stream<TaskEvent> get events => _events.stream;
+  /// Latest event
   TaskEvent? get event => _event;
 
+  /// Static method to fire file downloading
+  /// returns future of [DownloadTask] which may be used to control the request
+  /// [headers] are custom HTTP headers for client, may be used for request authentication
+  /// if [client] is pas null the default one will be used
+  /// [file] is download path, file will be created while downloading
+  /// [deleteOnCancel] specify if file should be deleted after download is cancelled
+  /// [deleteOnError] specify if file should be deleted when error is raised
+  /// [size] used to specify bytes end for range header
+  /// [safeRange] used to skip range header if bytes end not found
   static Future<DownloadTask> download(Uri url, {
     Map<String, String> headers = const {},
     http.Client? client,
     required File file,
     bool deleteOnCancel = true,
     bool deleteOnError = false,
-    int? size, // used to specify bytes end for range header
-    bool safeRange = false, // used to skip range header if bytes end not found
+    int? size,
+    bool safeRange = false,
   }) async {
     final task = DownloadTask._(
       url: url,
@@ -66,6 +77,8 @@ class DownloadTask {
     return task;
   }
 
+  /// Pause file downloading, file will be stored on defined location 
+  /// downloading may be continued from the paused point if file exists
   Future<bool> pause() async {
     if (_doneOrCancelled || !_downloading) return false;
     await _subscription?.cancel();
@@ -73,6 +86,8 @@ class DownloadTask {
     return true;
   }
 
+  /// Resume file downloading, if file exists downloading will continue from file size
+  /// will return `false` if downloading is in progress, finished or cancelled
   Future<bool> resume() async {
     if (_doneOrCancelled || _downloading) return false;
     // _subscription = await _download();
@@ -81,6 +96,8 @@ class DownloadTask {
     return true;
   }
 
+  /// Cancel the downloading, if [deleteOnCancel] is `true` then file will be deleted
+  /// will return `false` if downloading was already finished or cancelled
   Future<bool> cancel() async {
     if (_doneOrCancelled) return false;
     await _subscription?.cancel();
@@ -89,6 +106,7 @@ class DownloadTask {
     return true;
   }
 
+  /// 
   StreamSubscription? _subscription;
   final StreamController<TaskEvent> _events = StreamController<TaskEvent>();
   TaskEvent? _event;
@@ -165,7 +183,7 @@ class DownloadTask {
       if (length != null) {
         totalBytes = from + length;
       } else {
-        // Content-Lenght header is missing, but sometimes we can get size from Content-Range header
+        // Content-Lenght header is missing, a try to get size from Content-Range header
         final range = response.headers["content-range"];
         if (range != null) {
           final index = range.indexOf("/");
