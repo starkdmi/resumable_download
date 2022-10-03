@@ -23,7 +23,7 @@ void main() {
       // return streamRandomBytes(50 * 1024 * 1024);
       return longStream(seconds: 10);
       // return streamFile("video.mp4");
-    } else if (request.url == links[1]) {
+    } else if (request.url == links[2]) {
       // final response = http.StreamedResponse(Stream.fromIterable([]), 404);
       // return Future.value(response);
       throw UnimplementedError();
