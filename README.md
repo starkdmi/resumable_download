@@ -11,14 +11,14 @@
 
 Include latest version from [pub.dev](https://pub.dev/packages/download_task) to pubspec.yaml and simply run
 ```dart
-await DownloadTask.download(url, file);
+await DownloadTask.download(url, destination);
 ```
 
 ## Usage
 
 ```dart
 // initialize download request
-final task = await DownloadTask.download(url, file);
+final task = await DownloadTask.download(url, File("image.webp"));
 
 // listen to state changes
 task.events.listen((event) { ... }
