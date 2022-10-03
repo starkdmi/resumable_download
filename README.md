@@ -9,7 +9,7 @@
 
 ## Getting started
 
-Include latest version from [pub.dev](https://pub.dev/packages/download_task) to pubspec.yaml and simply run
+Include latest version from [pub.dev](https://pub.dev/packages/download_task) to `pubspec.yaml` and simply run
 ```dart
 await DownloadTask.download(url, destination);
 ```
