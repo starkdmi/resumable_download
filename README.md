@@ -2,10 +2,10 @@
 
 ## Features
 
-- **Control everything** - pause, resume and cancellation
+- **Take control** - pause, resume and cancel
 - **Listen to updates** - realtime progress and failure handling
-- **Easy to use**
-- **Pure Dart**
+- **Pure Dart** - only `http` dependency 
+- **Easy to use** - singletone and stream
 
 ## Getting started
 
