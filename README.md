@@ -1,4 +1,4 @@
-**Resumable HTTP download request** - pause, resume, cancel, progress and error handling
+**Resumable HTTP download request** - pause, resume, cancel, realtime progress and error handling
 
 ## Features
 
