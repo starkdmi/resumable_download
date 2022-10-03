@@ -1,11 +1,11 @@
-Resumable HTTP download request - pause, resume, cancel, progress and error handling
+**Resumable HTTP download request** - pause, resume, cancel, progress and error handling
 
 ## Features
 
-- [x] **Control everything** - pause, resume and cancellation
-- [x] **Listen to updates** - realtime progress and failure handling
-- [x] **Easy to use**
-- [x] **Pure Dart**
+- **Control everything** - pause, resume and cancellation
+- **Listen to updates** - realtime progress and failure handling
+- **Easy to use**
+- **Pure Dart**
 
 ## Getting started
 
