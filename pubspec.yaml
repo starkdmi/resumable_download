@@ -1,7 +1,7 @@
 name: download_task
 description: Resumable http download request
 version: 1.0.0
-publish_to: 'none'
+repository: https://github.com/starkdmi/resumable_download
 
 environment:
   sdk: '>=2.17.5 <3.0.0'
