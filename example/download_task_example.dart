@@ -2,13 +2,15 @@ import 'package:download_task/download_task.dart';
 import 'dart:io' show File, Directory;
 
 void main() async {
+  // specify url and destionation
   final url = Uri.parse("https://golang.org/dl/go1.19.1.src.tar.gz");
+  final file = File("${Directory.current.path}/example/Go.tar.gz");
+  
+  // initialize download request
+  final task = await DownloadTask.download(url, file: file);
 
+  // listen to state changes
   double previousProgress = 0.0;
-  final task = await DownloadTask.download(url,
-    file: File("${Directory.current.path}/example/Go.tar.gz"),
-  );
-
   task.events.listen((event) { 
     switch (event.state) {
       case TaskState.downloading:
@@ -37,10 +39,11 @@ void main() async {
     }
   });
 
-  // await Future.delayed(const Duration(milliseconds: 500));
-  // task.pause();
-  // await Future.delayed(const Duration(milliseconds: 500));
-  // task.resume();
-  // await Future.delayed(const Duration(milliseconds: 1500));
-  // task.cancel();
+  // control the process
+  await Future.delayed(const Duration(milliseconds: 500));
+  task.pause();
+  await Future.delayed(const Duration(milliseconds: 500));
+  task.resume();
+  await Future.delayed(const Duration(milliseconds: 1500));
+  task.cancel();
 }
