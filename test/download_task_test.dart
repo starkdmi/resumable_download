@@ -7,6 +7,10 @@ import 'package:test/test.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io' show File, Directory;
 
+// Code Coverage
+// flutter test --coverage
+// genhtml coverage/lcov.info -o coverage/html
+
 final List<Uri> links = [
   Uri.parse("https://download.task/image.png"),
   Uri.parse("https://download.task/video.mp4"),
@@ -79,6 +83,31 @@ void main() {
         TaskState.downloading,
         TaskState.canceled,
       ]));
+    });
+  });
+  
+  group("Advanced", () {
+    late DownloadTask task;
+    final file = File("$downloadDirectory/video.mp4");
+
+    setUp(() async {
+      // file which already exists
+      await file.create();
+      final bytes = List.generate(1024, (index) => 100);
+      file.writeAsBytes(bytes);
+
+      task = await DownloadTask.download(links[1], file: file, client: client);
+    });
+
+    tearDown(() async {
+      deleteFile(file);
+    });
+
+    test("Continue downloading when file exists ", () async {
+      expect(task.event?.bytesReceived, equals(-1));
+      await Future.delayed(const Duration(milliseconds: 900));
+      // file exists with 1024 bytes and 3 bytes per second were downloaded
+      expect(task.event?.bytesReceived, equals(1027));
     });
   });
 
