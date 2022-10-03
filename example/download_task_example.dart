@@ -1,5 +1,5 @@
 import 'package:download_task/download_task.dart';
-import 'dart:io' show File;
+import 'dart:io' show File, Directory;
 
 void main() async {
   final url = Uri.parse(
@@ -9,7 +9,7 @@ void main() async {
 
   double previousProgress = 0.0;
   final task = await DownloadTask.download(url,
-    file: File("/Users/starkdmi/Downloads/test/Go.tar.gz"),
+    file: File("${Directory.current.path}/example/Go.tar.gz"),
   );
 
   task.events.listen((event) { 
