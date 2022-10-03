@@ -13,3 +13,6 @@ build/
 pubspec.lock
 test/files/
 test/temp/
+
+# Code coverage
+coverage/
