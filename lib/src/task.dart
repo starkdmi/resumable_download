@@ -2,10 +2,12 @@ import 'dart:async' show StreamController, StreamSubscription;
 import 'dart:io' show File, FileMode;
 import 'package:http/http.dart' as http;
 
+/// Downloading state
 enum TaskState {
   downloading, paused, success, canceled, error
 }
 
+/// Event representing current progress or error and the current state
 class TaskEvent {
   const TaskEvent({ required this.state, this.bytesReceived, this.totalBytes, this.error });
 
@@ -18,6 +20,7 @@ class TaskEvent {
   String toString() => "TaskEvent ($state)";
 }
 
+/// Main class, used as a singletone for initialising the downloads
 class DownloadTask {
   DownloadTask._({ 
     required this.url,
@@ -36,7 +39,6 @@ class DownloadTask {
   final http.Client client;
   final bool deleteOnCancel;
   final bool deleteOnError;
-
   final int? size;
   final bool safeRange;
 
@@ -106,7 +108,7 @@ class DownloadTask {
     return true;
   }
 
-  /// 
+  // Events stream
   StreamSubscription? _subscription;
   final StreamController<TaskEvent> _events = StreamController<TaskEvent>();
   TaskEvent? _event;
@@ -114,11 +116,13 @@ class DownloadTask {
   int _bytesReceived = -1;
   int _totalBytes = -1;
 
+  // Intenal shortcuts
   bool get _cancelled => event?.state == TaskState.canceled;
   bool get _downloading => event?.state == TaskState.downloading;
   bool get _done => event?.state == TaskState.success;
   bool get _doneOrCancelled => _done || _cancelled;
 
+  /// Add new event to stream
   void _addEvent(TaskEvent event) {
     _event = event;
     if (!_events.isClosed) {
@@ -126,6 +130,7 @@ class DownloadTask {
     }
   }
 
+  /// Clean up
   Future<void> _dispose(TaskState state) async {
     if (state == TaskState.canceled) {
       if (deleteOnCancel) {
@@ -142,6 +147,9 @@ class DownloadTask {
     }
   }
 
+  /// Download function 
+  /// returns future of [StreamSubscription] which used to receive updates internally
+  /// returns `null` on error
   Future<StreamSubscription?> _download() async {
     late final StreamSubscription subscription;
 
