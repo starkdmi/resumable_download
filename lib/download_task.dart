@@ -1,6 +1,6 @@
 /// Resumable http download request
 ///
-/// More dartdocs go here.
+/// Pause, resume, cancel and receive progress of every task
 library download_task;
 
 export 'src/task.dart' show DownloadTask, TaskEvent, TaskState;
