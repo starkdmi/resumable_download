@@ -2,10 +2,7 @@ import 'package:download_task/download_task.dart';
 import 'dart:io' show File, Directory;
 
 void main() async {
-  final url = Uri.parse(
-    "https://golang.org/dl/go1.17.3.src.tar.gz",
-    // "https://not.found/html.txt",
-  );
+  final url = Uri.parse("https://golang.org/dl/go1.19.1.src.tar.gz");
 
   double previousProgress = 0.0;
   final task = await DownloadTask.download(url,
