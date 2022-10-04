@@ -1,0 +1,19 @@
+# macOS Miscellaneous
+.DS_Store
+
+# Files and directories created by pub
+.dart_tool/
+.packages
+
+# Conventional directory for build outputs
+build/
+
+# Omit committing pubspec.lock for library packages
+pubspec.lock
+
+# Code coverage
+coverage/
+
+# Dev files
+test/temp/
+TODO.md
