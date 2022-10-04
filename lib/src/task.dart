@@ -125,7 +125,7 @@ class DownloadTask {
   int _bytesReceived = -1;
   int _totalBytes = -1;
 
-  // Intenal shortcuts
+  // Internal shortcuts
   bool get _cancelled => event?.state == TaskState.canceled;
   bool get _downloading => event?.state == TaskState.downloading;
   bool get _done => event?.state == TaskState.success;
