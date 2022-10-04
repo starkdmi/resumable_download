@@ -94,7 +94,7 @@ void main() {
       // file which already exists
       await file.create();
       final bytes = List.generate(1024, (index) => 100);
-      file.writeAsBytes(bytes);
+      await file.writeAsBytes(bytes);
 
       task = await DownloadTask.download(links[1], file: file, client: client);
     });
