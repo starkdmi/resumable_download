@@ -28,7 +28,8 @@ task.pause();
 task.resume();
 task.cancel();
 ```
-Example source code available at `/example/download_task_example.dart`
+Example full source code available at [example's directory](example/download_task_example.dart)
+
 
 ## Additional information
 
