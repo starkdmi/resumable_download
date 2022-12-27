@@ -47,15 +47,16 @@ class DownloadTask {
   /// Latest event
   TaskEvent? get event => _event;
 
-  /// Static method to fire file downloading
-  /// returns future of [DownloadTask] which may be used to control the request
-  /// [headers] are custom HTTP headers for client, may be used for request authentication
-  /// if [client] is pas null the default one will be used
-  /// [file] is download path, file will be created while downloading
-  /// [deleteOnCancel] specify if file should be deleted after download is cancelled
-  /// [deleteOnError] specify if file should be deleted when error is raised
-  /// [size] used to specify bytes end for range header
-  /// [safeRange] used to skip range header if bytes end not found
+  /// Static method to fire file downloading returns future of [DownloadTask] which may be used to control the request
+  ///
+  /// * [headers] are custom HTTP headers for client, may be used for request authentication
+  /// * if [client] is pas null the default one will be used
+  /// * [file] is download path, file will be created while downloading
+  /// * [deleteOnCancel] specify if file should be deleted after download is cancelled
+  /// * [deleteOnError] specify if file should be deleted when error is raised
+  /// * [size] used to specify bytes end for range header
+  /// * [safeRange] used to skip range header if bytes end not found
+  ///
   static Future<DownloadTask> download(
     Uri url, {
     Map<String, String> headers = const {},
@@ -182,7 +183,9 @@ class DownloadTask {
       final sink = await file.open(mode: FileMode.writeOnlyAppend);
 
       final request = http.Request("GET", url);
-
+      
+      request.headers.addAll(headers);
+      
       // range header
       if (size != null) {
         request.headers["Range"] = "bytes=$from-$size";
