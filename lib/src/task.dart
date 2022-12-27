@@ -183,9 +183,9 @@ class DownloadTask {
       final sink = await file.open(mode: FileMode.writeOnlyAppend);
 
       final request = http.Request("GET", url);
-      
+
       request.headers.addAll(headers);
-      
+
       // range header
       if (size != null) {
         request.headers["Range"] = "bytes=$from-$size";

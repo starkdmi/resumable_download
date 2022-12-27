@@ -1,7 +1,7 @@
 name: download_task
 description: Resumable http download request - pause, resume, cancel, realtime progress and error handling
 repository: https://github.com/starkdmi/resumable_download
-version: 1.0.1
+version: 1.0.2
 
 environment:
   sdk: '>=2.12.0 <3.0.0'

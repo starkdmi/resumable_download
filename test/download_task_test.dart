@@ -10,6 +10,13 @@ import 'dart:io' show File, Directory;
 // Code Coverage
 // flutter test --coverage
 // genhtml coverage/lcov.info -o coverage/html
+//
+// Format Code
+// dart format lib
+//
+// Package Analysis
+// https://github.com/dart-lang/pana
+// pana .
 
 final List<Uri> links = [
   Uri.parse("https://download.task/image.png"),
