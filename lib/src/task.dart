@@ -50,7 +50,7 @@ class DownloadTask {
   /// Static method to fire file downloading returns future of [DownloadTask] which may be used to control the request
   ///
   /// * [headers] are custom HTTP headers for client, may be used for request authentication
-  /// * if [client] is pas null the default one will be used
+  /// * if [client] is `null` the default one will be used
   /// * [file] is download path, file will be created while downloading
   /// * [deleteOnCancel] specify if file should be deleted after download is cancelled
   /// * [deleteOnError] specify if file should be deleted when error is raised
