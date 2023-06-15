@@ -84,11 +84,12 @@ class DownloadTask {
   /// downloading may be continued from the paused point if file exists
   Future<bool> pause() async {
     if (_doneOrCancelled || !_downloading) return false;
-    await _subscription?.cancel();
     _addEvent(TaskEvent(
         state: TaskState.paused,
         bytesReceived: _bytesReceived,
         totalBytes: _totalBytes));
+    await _subscription?.cancel();
+    _subscription = null;
     return true;
   }
 
@@ -96,12 +97,12 @@ class DownloadTask {
   /// will return `false` if downloading is in progress, finished or cancelled
   Future<bool> resume() async {
     if (_doneOrCancelled || _downloading) return false;
-    // _subscription = await _download();
-    _download().then((value) => _subscription = value);
     _addEvent(TaskEvent(
         state: TaskState.downloading,
         bytesReceived: _bytesReceived,
         totalBytes: _totalBytes));
+    _download().then((value) => _subscription = value);
+    // _subscription = await  _download();
     return true;
   }
 
@@ -109,11 +110,12 @@ class DownloadTask {
   /// will return `false` if downloading was already finished or cancelled
   Future<bool> cancel() async {
     if (_doneOrCancelled) return false;
-    await _subscription?.cancel();
     _addEvent(TaskEvent(
         state: TaskState.canceled,
         bytesReceived: _bytesReceived,
         totalBytes: _totalBytes));
+    await _subscription?.cancel();
+    _subscription = null;
     _dispose(TaskState.canceled);
     return true;
   }
@@ -216,17 +218,25 @@ class DownloadTask {
 
       // process
       subscription = response.stream.listen((data) async {
+        if (subscription != _subscription) return;
         subscription.pause();
         await sink.writeFrom(data);
         final bytesReceived = from + data.length;
         from = bytesReceived;
         _bytesReceived = bytesReceived;
         _totalBytes = totalBytes;
-        _addEvent(TaskEvent(
-            state: TaskState.downloading,
-            bytesReceived: bytesReceived,
-            totalBytes: totalBytes));
-        subscription.resume();
+
+        if (_doneOrCancelled ||
+            !_downloading ||
+            subscription != _subscription) {
+          subscription.cancel();
+        } else {
+          _addEvent(TaskEvent(
+              state: TaskState.downloading,
+              bytesReceived: bytesReceived,
+              totalBytes: totalBytes));
+          subscription.resume();
+        }
       }, onDone: () async {
         _addEvent(const TaskEvent(state: TaskState.success));
         await sink.close();
