@@ -14,3 +14,7 @@
 ## 1.0.3
 
 - Update dependencies for the Dart 3 support
+
+## 1.0.4
+
+- Issue with fast switching between paused/downloading modes resolved
